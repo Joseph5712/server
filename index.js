@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 // database connection
 const mongoose = require("mongoose");
-const db = mongoose.connect("mongodb+srv://josephme5712:9a1Ao5AEy09ewGbC@cluster0.m5sfesz.mongodb.net/DB_Aventones");
+const db = mongoose.connect("mongodb+srv://molinajesus2003:weJyz3uFbpRRcg2M@cluster0.orvrvph.mongodb.net/");
 
 // parser for the request body (required for the POST and PUT methods)
 const bodyParser = require("body-parser");
@@ -14,5 +14,12 @@ app.use(cors({
   domains: '*',
   methods: "*"
 }));
+
+const {
+  userPost
+} = require("./Controllers/userController.js");
+
+app.post("/api/user",userPost)
+
 
 app.listen(3001, () => console.log(`Example app listening on port 3001!`))
