@@ -11,7 +11,7 @@ app.use(bodyParser.json());
 // check for cors
 const cors = require("cors");
 app.use(cors({
-  domains: '*',
+  origin: '*',
   methods: "*"
 }));
 
