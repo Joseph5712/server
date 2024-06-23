@@ -15,17 +15,16 @@ app.use(cors({
   methods: "*"
 }));
 
+
+//Import user controller
 const {
   userPost,
   userGet,
   userDelete,
   userPatch
-} = require("./Controllers/userController.js");
+} = require("/Controllers/userController.js");
 
 app.post("/api/user",userPost)
-app.get("/api/user",userGet)
-app.delete("/api/user",userDelete)
-app.patch("/api/user",userPatch)
 
 
 app.listen(3001, () => console.log(`Example app listening on port 3001!`))
