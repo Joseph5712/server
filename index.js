@@ -22,9 +22,10 @@ const {
   userGet,
   userDelete,
   userPatch
-} = require("/Controllers/userController.js");
+} = require("./Controllers/userController.js");
 
 app.post("/api/user",userPost)
+app.get("/api/user",userGet)
 
 
 app.listen(3001, () => console.log(`Example app listening on port 3001!`))
