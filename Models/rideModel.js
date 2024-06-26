@@ -32,21 +32,6 @@ const rideSchema = new Schema({
         type: Number,
         required: true,
         min: 0
-    },
-    vehicleDetails: {
-        make: {
-            type: String,
-            required: true
-        },
-        model: {
-            type: String,
-            required: true
-        },
-        year: {
-            type: Number,
-            required: true,
-            min: 1886 // Year of the first car
-        }
     }
 });
 module.exports = mongoose.model('Ride', rideSchema);

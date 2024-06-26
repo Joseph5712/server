@@ -8,7 +8,12 @@ const user = new Schema({
     birthday : {type: Date},
     email : {type: String},
     password : {type: String},
-    phone_number: {type: Number}
+    phone_number: {type: Number},
+    address : {type: String},
+    country : {type: String},
+    state : {type : String},
+    city: {type: String},
+    role: {type: String} 
 });
 
 module.exports = mongoose.model('User',user);

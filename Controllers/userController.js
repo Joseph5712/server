@@ -68,6 +68,10 @@ const userPatch = async (req, res) => {
       user.email = req.body.email || user.email;
       user.password = req.body.password || user.password;
       user.phone_number = req.body.phone_number || user.phone_number;
+      user.address = req.body.address || user.address;
+      user.country = req.body.country || user.country;
+      user.state = req.body.state || user.state;
+      user.city = req.body.city || user.city;
 
       const updatedUser = await user.save();
 

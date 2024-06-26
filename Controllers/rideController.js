@@ -10,7 +10,7 @@ const ridePost = async (req, res) => {
     ride.time = req.body.time;
     ride.seats = req.body.seats;
     ride.fee = req.body.fee;
-    ride.vehicleDetails = req.body.vehicleDetails;
+    
 
     if (ride.departureFrom && ride.arriveTo) {
         await ride.save()
@@ -80,7 +80,7 @@ const ridePatch = (req, res) => {
             ride.time = req.body.time || ride.time;
             ride.seats = req.body.seats || ride.seats;
             ride.fee = req.body.fee || ride.fee;
-            ride.vehicleDetails = req.body.vehicleDetails || ride.vehicleDetails;
+           
 
             ride.save(function (err) {
                 if (err) {
