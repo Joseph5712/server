@@ -23,6 +23,13 @@ const {
   rideDelete
 } = require("./Controllers/rideController.js");
 
+// Ride routes
+app.post("/api/rides", ridePost);
+app.get("/api/rides", rideGet);
+app.patch("/api/rides", ridePatch);
+app.delete("/api/rides", rideDelete);
+
+
 const {
   userPost,
   userGet,
@@ -36,11 +43,20 @@ app.get("/api/user",userGet)
 app.delete("/api/user",userDelete)
 app.patch("/api/user",userPatch)
 
-// Ride routes
-app.post("/api/rides", ridePost);
-app.get("/api/rides", rideGet);
-app.patch("/api/rides", ridePatch);
-app.delete("/api/rides", rideDelete);
+
+const{
+  vehiculePost,
+  vehiculeGet,
+  vehiculePatch,
+  vehiculeDelete
+} = require("./Controllers/vehiculeContoller.js");
+
+//Vehicule routes
+app.post("/api/vehicule",vehiculePost);
+app.get("/api/vehicule",vehiculeGet);
+app.patch("/api/vehicule",vehiculePatch);
+app.delete("/api/vehicule",vehiculeDelete);
+
 
 
 app.listen(3001, () => console.log(`Example app listening on port 3001!`))
