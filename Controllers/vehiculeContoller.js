@@ -1,6 +1,6 @@
 const Vehicule = require("../Models/vehiculeModel.js");
 
-const vehidulePost = async (req, res) => {
+const vehiculePost = async (req, res) => {
   let vehicule = new Vehicule(req.body);
 
   await vehicule
