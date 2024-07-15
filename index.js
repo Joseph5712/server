@@ -34,14 +34,16 @@ const {
   userPost,
   userGet,
   userDelete,
-  userPatch
+  userPatch,
+  userLogin
 } = require("./Controllers/userController.js");
 
 // User routes
 app.post("/api/user", userPost);
-app.get("/api/user",userGet)
-app.delete("/api/user",userDelete)
-app.patch("/api/user",userPatch)
+app.get("/api/user",userGet);
+app.delete("/api/user",userDelete);
+app.patch("/api/user",userPatch);
+app.post('/api/login', userLogin);
 
 
 const{
@@ -58,10 +60,7 @@ app.patch("/api/vehicule",vehiculePatch);
 app.delete("/api/vehicule",vehiculeDelete);
 
 
-//login
-const { userLogin } = require('./Controllers/userController.js');
 
-app.post('/api/login', userLogin);
 
 
 app.listen(3001, () => console.log(`Example app listening on port 3001!`))
