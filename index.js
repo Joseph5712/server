@@ -58,5 +58,10 @@ app.patch("/api/vehicule",vehiculePatch);
 app.delete("/api/vehicule",vehiculeDelete);
 
 
+//login
+const { userLogin } = require('./Controllers/userController.js');
+
+app.post('/api/login', userLogin);
+
 
 app.listen(3001, () => console.log(`Example app listening on port 3001!`))

@@ -121,11 +121,37 @@ const userDelete = async (req, res) => {
   }
 };
 
+const userLogin = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+      const user = await User.findOne({ email });
+
+      if (!user) {
+          return res.status(404).json({ error: 'User not found' });
+      }
+
+      const isMatch = await user.comparePassword(password);
+
+      if (!isMatch) {
+          return res.status(400).json({ error: 'Invalid password' });
+      }
+
+      // Aquí puedes generar un token JWT si lo necesitas para autenticación posterior
+
+      res.status(200).json({ message: 'Login successful' });
+  } catch (err) {
+      console.error('Error while logging in', err);
+      res.status(500).json({ error: 'Login failed' });
+  }
+};
+
 
 
 module.exports = {
   userPost,
   userGet,
   userPatch,
-  userDelete
+  userDelete,
+  userLogin
 };
