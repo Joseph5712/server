@@ -3,7 +3,7 @@ const app = express();
 const bcrypt = require('bcrypt');
 // database connection
 const mongoose = require("mongoose");
-const db = mongoose.connect("mongodb+srv://josephme5712:9a1Ao5AEy09ewGbC@cluster0.m5sfesz.mongodb.net/DB_Aventones");
+const db = mongoose.connect("mongodb+srv://molinajesus2003:weJyz3uFbpRRcg2M@cluster0.orvrvph.mongodb.net/DB_Aventados");
 const User = require('./Models/userModel.js');
 
 // parser for the request body (required for the POST and PUT methods)
