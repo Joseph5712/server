@@ -66,6 +66,7 @@ const userPatch = async (req, res) => {
       user.last_name = req.body.last_name || user.last_name;
       user.cedula = req.body.cedula || user.cedula;
       user.email = req.body.email || user.email;
+      user.birthday = req.body.birthday || user.birthday;
       user.password = req.body.password || user.password;
       user.phone_number = req.body.phone_number || user.phone_number;
       user.address = req.body.address || user.address;

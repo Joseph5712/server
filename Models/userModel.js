@@ -6,7 +6,7 @@ const userSchema = new Schema({
     first_name: { type: String },
     last_name: { type: String },
     cedula: { type: Number },
-    birthday: { type: Date },
+    birthday: { type: String },
     email: { type: String, unique: true, required: true },
     password: { type: String, required: true },
     phone_number: { type: Number },
@@ -14,7 +14,7 @@ const userSchema = new Schema({
     country: { type: String },
     state: { type: String },
     city: { type: String },
-    role: { type: String }
+    role: { type: String, default:"client"} 
 });
 
 // Middleware para encriptar la contraseña antes de guardarla en la base de datos
