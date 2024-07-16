@@ -14,17 +14,17 @@ const userSchema = new Schema({
     country: { type: String },
     state: { type: String },
     city: { type: String },
-    role: { type: String } 
+    role: { type: String }
 });
 
-// Encrypt the password before saving the user model
+// Middleware para encriptar la contraseña antes de guardarla en la base de datos
 userSchema.pre('save', async function (next) {
-    if (this.isModified('password') || this.isNew) {
-        const salt = await bcrypt.genSalt(10);
-        this.password = await bcrypt.hash(this.password, salt);
+    const user = this;
+    if (user.isModified('password')) {
+        const hashedPassword = await bcrypt.hash(user.password, 10);
+        user.password = hashedPassword;
     }
     next();
 });
-
 
 module.exports = mongoose.model('User', userSchema);
