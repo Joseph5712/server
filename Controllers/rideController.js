@@ -1,36 +1,47 @@
-const Ride = require("../Models/rideModel.js");
+const Ride = require('../models/rideModel');
+const User = require('../Models/userModel'); // Asegúrate de tener el modelo User importado
 
-// Create a new ride (POST)
 const ridePost = async (req, res) => {
     const { departureFrom, arriveTo, days, time, seats, fee, vehicleDetails, userId } = req.body;
 
-    if (!departureFrom || !arriveTo || !userId) {
-        res.status(422).json({ error: "No valid data provided for ride" });
-        return;
+    // Verifica que todos los campos necesarios estén presentes y que userId sea un string no vacío
+    if (!departureFrom || !arriveTo || !userId || typeof userId !== 'string' || userId.trim() === '') {
+        return res.status(422).json({ error: "No valid data provided for ride" });
     }
 
-    const ride = new Ride({
-        departureFrom,
-        arriveTo,
-        days,
-        time,
-        seats,
-        fee,
-        vehicleDetails,
-        user: userId // Relacionar el ride con el userId
-    });
-
     try {
+        // Verificar si el usuario existe
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        // Crear el objeto ride
+        const ride = new Ride({
+            departureFrom,
+            arriveTo,
+            days,
+            time,
+            seats,
+            fee,
+            vehicleDetails,
+            user: userId // Asignar el ID del usuario al ride
+        });
+
+        // Guardar el ride en la base de datos
         const data = await ride.save();
-        res.status(201).header({ location: `/api/rides/?id=${data.id}` }).json(data);
+        return res.status(201).header({ location: `/api/rides/?id=${data.id}` }).json(data);
     } catch (err) {
-        res.status(422).json({
+        console.error("Error while saving the ride", err);
+        return res.status(422).json({
             error_code: 1233,
             error: "There was an error saving the ride"
         });
-        console.log("Error while saving the ride", err);
     }
 };
+
+
+
 
 // Get all rides or a specific ride by ID (GET)
 const rideGet = (req, res) => {
@@ -92,32 +103,28 @@ const ridePatch = (req, res) => {
 };
 
 // Delete a ride by ID (DELETE)
-const rideDelete = async (req, res) => {
+const rideDelete = (req, res) => {
     if (req.query && req.query.id) {
-      try {
-        const ride = await Ride.findById(req.query.id);
-        if (!ride) {
-          res.status(404);
-          console.log("Ride not found");
-          return res.json({ error: "Ride not found" });
-        }
-  
-        await Ride.deleteOne({ _id: req.query.id });
-  
-        res.status(200); // OK
-        return res.json({ message: "Ride successfully deleted" });
-      } catch (err) {
-        res.status(500);
-        console.log("Error while querying or deleting the ride", err);
-        return res.json({
-          error: "There was an error deleting the ride",
+        Ride.findById(req.query.id, function (err, ride) {
+            if (err || !ride) {
+                res.status(404).json({ error: "Ride doesn't exist" });
+                console.log("Error while querying the ride", err);
+                return;
+            }
+
+            ride.deleteOne(function (err) {
+                if (err) {
+                    res.status(422).json({ error: "There was an error deleting the ride" });
+                    console.log("Error while deleting the ride", err);
+                    return;
+                }
+                res.status(204).json({});
+            });
         });
-      }
     } else {
-      res.status(400); // Bad Request
-      return res.json({ error: "Ride ID is required" });
+        res.status(404).json({ error: "Ride doesn't exist" });
     }
-  };
+};
 
 module.exports = {
     rideGet,
