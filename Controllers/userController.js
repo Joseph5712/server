@@ -2,11 +2,6 @@ const User = require("../Models/userModel.js");
 
 const userPost = async (req, res) => {
 
-  if (req.body.date_of_birth) {
-    const [year, month, day] = req.body.date_of_birth.split('-');
-    req.body.date_of_birth = new Date(year, month - 1, day);
-  }
-
   let user = new User(req.body);
 
   await user
