@@ -1,5 +1,5 @@
 const Ride = require('../Models/rideModel');
-const User = require('../Models/userModel'); // Asegúrate de tener el modelo User importado
+const User = require('../Models/userModel');
 
 const ridePost = async (req, res) => {
     const { departureFrom, arriveTo, days, time, seats, fee, vehicleDetails, userId } = req.body;
@@ -15,7 +15,6 @@ const ridePost = async (req, res) => {
         if (!user) {
             return res.status(404).json({ error: "User not found" });
         }
-
         // Crear el objeto ride
         const ride = new Ride({
             departureFrom,
@@ -25,7 +24,7 @@ const ridePost = async (req, res) => {
             seats,
             fee,
             vehicleDetails,
-            user: userId // Asignar el ID del usuario al ride
+            user: userId // Asignar el id del usuario al ride
         });
 
         // Guardar el ride en la base de datos
@@ -47,7 +46,7 @@ const ridePost = async (req, res) => {
 const rideGet = (req, res) => {
     if (req.query && req.query.id) {
         Ride.findById(req.query.id)
-            .populate('user') // Populate the user field
+            .populate('user')
             .then((ride) => {
                 res.json(ride);
             })
@@ -57,7 +56,7 @@ const rideGet = (req, res) => {
             });
     } else {
         Ride.find()
-            .populate('user') // Populate the user field
+            .populate('user')
             .then((rides) => {
                 res.json(rides);
             })
@@ -67,7 +66,7 @@ const rideGet = (req, res) => {
     }
 };
 
-// Update a ride by ID (PATCH)
+// Update a ride
 const ridePatch = (req, res) => {
     if (req.query && req.query.id) {
         Ride.findById(req.query.id, function (err, ride) {
@@ -102,7 +101,7 @@ const ridePatch = (req, res) => {
     }
 };
 
-// Delete a ride by ID (DELETE)
+// Delete a ride 
 
 const rideDelete = async (req, res) => {
     if (req.query && req.query.id) {
