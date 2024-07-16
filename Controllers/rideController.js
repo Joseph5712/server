@@ -1,4 +1,4 @@
-const Ride = require('../models/rideModel');
+const Ride = require('../Models/rideModel');
 const User = require('../Models/userModel'); // Asegúrate de tener el modelo User importado
 
 const ridePost = async (req, res) => {
@@ -126,9 +126,10 @@ const rideDelete = (req, res) => {
     }
 };
 
+
 module.exports = {
     rideGet,
     ridePost,
     ridePatch,
-    rideDelete,
+    rideDelete
 };
