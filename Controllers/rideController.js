@@ -1,4 +1,4 @@
-const Ride = require('../models/rideModel');
+const Ride = require('../Models/rideModel');
 const User = require('../Models/userModel'); // Asegúrate de tener el modelo User importado
 
 const ridePost = async (req, res) => {
@@ -103,32 +103,39 @@ const ridePatch = (req, res) => {
 };
 
 // Delete a ride by ID (DELETE)
-const rideDelete = (req, res) => {
-    if (req.query && req.query.id) {
-        Ride.findById(req.query.id, function (err, ride) {
-            if (err || !ride) {
-                res.status(404).json({ error: "Ride doesn't exist" });
-                console.log("Error while querying the ride", err);
-                return;
-            }
 
-            ride.deleteOne(function (err) {
-                if (err) {
-                    res.status(422).json({ error: "There was an error deleting the ride" });
-                    console.log("Error while deleting the ride", err);
-                    return;
-                }
-                res.status(204).json({});
-            });
+const rideDelete = async (req, res) => {
+    if (req.query && req.query.id) {
+      try {
+        const ride = await Ride.findById(req.query.id);
+        if (!ride) {
+          res.status(404);
+          console.log("Ride not found");
+          return res.json({ error: "Ride not found" });
+        }
+  
+        await Ride.deleteOne({ _id: req.query.id });
+  
+        res.status(200); // OK
+        return res.json({ message: "Ride successfully deleted" });
+      } catch (err) {
+        res.status(500);
+        console.log("Error while querying or deleting the ride", err);
+        return res.json({
+          error: "There was an error deleting the ride",
         });
+      }
     } else {
-        res.status(404).json({ error: "Ride doesn't exist" });
+      res.status(400); // Bad Request
+      return res.json({ error: "Ride ID is required" });
     }
-};
+  };
+
+
 
 module.exports = {
     rideGet,
     ridePost,
     ridePatch,
-    rideDelete,
+    rideDelete
 };

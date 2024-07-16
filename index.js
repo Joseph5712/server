@@ -3,8 +3,7 @@ const app = express();
 const bcrypt = require('bcrypt');
 // database connection
 const mongoose = require("mongoose");
-const db = mongoose.connect("mongodb+srv://molinajesus2003:weJyz3uFbpRRcg2M@cluster0.orvrvph.mongodb.net/");
-const User = require('./Models/userModel.js');
+const db = mongoose.connect("mongodb+srv://molinajesus2003:weJyz3uFbpRRcg2M@cluster0.orvrvph.mongodb.net/DB_Aventados");
 
 // parser for the request body (required for the POST and PUT methods)
 const bodyParser = require("body-parser");
@@ -17,6 +16,10 @@ app.use(cors({
   origin: '*',
   methods: "*"
 }));
+
+// Importar modelos
+const Ride = require('./Models/rideModel');
+const User = require('./Models/userModel');
 
 // Endpoint para iniciar sesión
 app.post('/api/login', async (req, res) => {
@@ -48,6 +51,38 @@ app.post('/api/login', async (req, res) => {
   } catch (error) {
     console.error('Error interno del servidor:', error);
     res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+// Endpoint para buscar rides
+app.post("/api/rides/search", async (req, res) => {
+  const { searchInput, from, to, days } = req.body;
+
+  try {
+    // Construir la consulta de búsqueda
+    let query = {};
+
+    if (searchInput) {
+      query.$text = { $search: searchInput };
+    }
+    if (from) {
+      query.departureFrom = from;
+    }
+    if (to) {
+      query.arriveTo = to;
+    }
+    if (days && days.length > 0) {
+      query.days = { $in: days };
+    }
+
+    // Ejecutar la consulta en la base de datos
+    const rides = await Ride.find(query).populate('user').exec();
+
+    // Enviar los resultados como respuesta
+    res.status(200).json(rides);
+  } catch (error) {
+    console.error('Error searching rides:', error);
+    res.status(500).json({ error: 'Error searching rides' });
   }
 });
 
