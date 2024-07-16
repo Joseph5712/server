@@ -47,6 +47,12 @@ const rideSchema = new Schema({
             required: true,
             min: 1886 // Year of the first car
         }
+    },
+    user: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
     }
 });
+
 module.exports = mongoose.model('Ride', rideSchema);
