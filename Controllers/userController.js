@@ -1,13 +1,13 @@
 const User = require("../Models/userModel.js");
 
+
+// CREATED
 const userPost = async (req, res) => {
-
   let user = new User(req.body);
-
   await user
     .save()
     .then((user) => {
-      res.status(201); // CREATED
+      res.status(201); 
       res.header({
         location: `/api/user/?id=${user.id}`,
       });
@@ -22,6 +22,7 @@ const userPost = async (req, res) => {
     });
 };
 
+//mostrar
 const userGet = (req, res) => {
   if (req.query && req.query.id) {
     User.findById(req.query.id)
@@ -45,7 +46,7 @@ const userGet = (req, res) => {
   }
 };
 
-
+//edit
 const userPatch = async (req, res) => {
   if (req.query && req.query.id) {
     try {
@@ -55,8 +56,6 @@ const userPatch = async (req, res) => {
         console.log("User not found");
         return res.json({ error: "User not found" });
       }
-
-      // Actualizar las propiedades solo si están presentes en req.body
       user.first_name = req.body.first_name || user.first_name;
       user.last_name = req.body.last_name || user.last_name;
       user.cedula = req.body.cedula || user.cedula;
@@ -84,12 +83,12 @@ const userPatch = async (req, res) => {
       });
     }
   } else {
-    res.status(400); // Bad Request
+    res.status(400);
     res.json({ error: "User ID is required" });
   }
 };
 
-
+//delete
 const userDelete = async (req, res) => {
   if (req.query && req.query.id) {
     try {
@@ -117,10 +116,28 @@ const userDelete = async (req, res) => {
   }
 };
 
+//mostrar usuario por id
+const getUserById = (req, res) => {
+  const userId = req.params.userId; // Obtener el ID del usuario de los parámetros de la ruta
+
+  User.findById(userId)
+    .then((user) => {
+      if (!user) {
+        res.status(404).json({ error: "User not found" });
+      } else {
+        res.json(user);
+      }
+    })
+    .catch((err) => {
+      console.error("Error while fetching user:", err);
+      res.status(500).json({ error: "Error fetching user" });
+    });
+};
 
 module.exports = {
   userPost,
   userGet,
   userPatch,
-  userDelete
+  userDelete,
+  getUserById 
 };

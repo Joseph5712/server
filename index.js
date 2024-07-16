@@ -61,7 +61,7 @@ app.post("/api/rides/search", async (req, res) => {
   const { searchInput, from, to, days } = req.body;
 
   try {
-    // Construir la consulta de búsqueda
+    // Construir la consulta de busqueda
     let query = {};
 
     if (searchInput) {
@@ -106,7 +106,8 @@ const {
   userPost,
   userGet,
   userDelete,
-  userPatch
+  userPatch,
+  getUserById
 } = require("./Controllers/userController.js");
 
 // User routes
@@ -114,6 +115,7 @@ app.post("/api/user", userPost);
 app.get("/api/user",userGet);
 app.delete("/api/user",userDelete);
 app.patch("/api/user",userPatch);
+app.get("/api/user/:userId", getUserById);
 
 
 app.listen(3001, () => console.log(`Example app listening on port 3001!`))
