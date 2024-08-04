@@ -67,39 +67,42 @@ const rideGet = (req, res) => {
 };
 
 // Update a ride
-const ridePatch = (req, res) => {
+const ridePatch = async (req, res) => {
     if (req.query && req.query.id) {
-        Ride.findById(req.query.id, function (err, ride) {
-            if (err || !ride) {
+        try {
+            const ride = await Ride.findById(req.query.id);
+            if (!ride) {
                 res.status(404).json({ error: "Ride doesn't exist" });
-                console.log("Error while querying the ride", err);
+                console.log("Ride doesn't exist");
                 return;
             }
 
-            // Update ride fields
+            // Actualizar campos del ride
             ride.departureFrom = req.body.departureFrom || ride.departureFrom;
             ride.arriveTo = req.body.arriveTo || ride.arriveTo;
             ride.days = req.body.days || ride.days;
             ride.time = req.body.time || ride.time;
             ride.seats = req.body.seats || ride.seats;
             ride.fee = req.body.fee || ride.fee;
-            ride.vehicleDetails.make = req.body.vehicleDetails.make || ride.vehicleDetails.make;
-            ride.vehicleDetails.model = req.body.vehicleDetails.model || ride.vehicleDetails.model;
-            ride.vehicleDetails.year = req.body.vehicleDetails.year || ride.vehicleDetails.year;
 
-            ride.save(function (err) {
-                if (err) {
-                    res.status(422).json({ error: "There was an error saving the ride" });
-                    console.log("Error while saving the ride", err);
-                    return;
-                }
-                res.status(200).json(ride);
-            });
-        });
+            // Manejar vehicleDetails de manera segura
+            const { make, model, year } = req.body.vehicleDetails || {};
+            ride.vehicleDetails.make = make || ride.vehicleDetails.make;
+            ride.vehicleDetails.model = model || ride.vehicleDetails.model;
+            ride.vehicleDetails.year = year || ride.vehicleDetails.year;
+
+            await ride.save();
+            res.status(200).json(ride);
+        } catch (err) {
+            res.status(422).json({ error: "There was an error saving the ride" });
+            console.log("Error while saving the ride", err);
+        }
     } else {
         res.status(404).json({ error: "Ride doesn't exist" });
     }
 };
+
+
 
 // Delete a ride 
 
