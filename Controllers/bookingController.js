@@ -1,5 +1,6 @@
 const Booking = require("../Models/bookingModel.js");
 const Ride = require("../Models/rideModel.js");
+const User = require('../Models/userModel');
 
 // CREAR Booking
 const bookingPost = async (req, res) => {
@@ -8,6 +9,7 @@ const bookingPost = async (req, res) => {
     try {
         // Verificar si el ride existe
         const ride = await Ride.findById(rideId);
+        console.log(rideId);
         if (!ride) {
             return res.status(404).json({ error: "Ride not found" });
         }
