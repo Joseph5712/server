@@ -10,17 +10,7 @@ const bookingSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Ride',
         required: true
-    },
-    departureFrom: {
-
-        type: String,
-        required: true
-    },
-
-    arriveTo: {
-        type: String,
-        required: true
-    },
+    }
 }, {
     timestamps: true
 });

@@ -111,7 +111,8 @@ const {
 
 const {
   bookingPost,
-  bookingGet
+  bookingGet,
+  getAllBookings
 } = require("./Controllers/bookingController.js");
 
 // User routes
@@ -124,6 +125,8 @@ app.get("/api/user/:userId", getUserById);
 // Booking routes
 app.post("/api/bookings", bookingPost);
 app.get("/api/bookings", bookingGet);
+app.get("/api/bookingsClient", getAllBookings);
+
 
 
 app.listen(3001, () => console.log(`Example app listening on port 3001!`))

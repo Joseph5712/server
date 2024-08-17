@@ -9,25 +9,28 @@ const bookingPost = async (req, res) => {
     try {
         // Verificar si el ride existe
         const ride = await Ride.findById(rideId);
-        console.log(rideId);
         if (!ride) {
             return res.status(404).json({ error: "Ride not found" });
         }
 
-        // Crear el nuevo booking
+        // Verificar si el usuario ya ha solicitado este ride
+        const existingBooking = await Booking.findOne({ user: userId, ride: rideId });
+        if (existingBooking) {
+            return res.status(400).json({ error: "You have already requested this ride." });
+        }
+
+        // Crear una nueva reserva
         const booking = new Booking({
             user: userId,
             ride: rideId,
-            departureFrom: ride.departureFrom,
-            arriveTo: ride.arriveTo
+            status: 'pending' // o cualquier otro estado inicial
         });
 
-        const savedBooking = await booking.save();
-
-        res.status(201).json(savedBooking);
-    } catch (err) {
-        res.status(422).json({ error: "Error while saving the booking" });
-        console.error("Error while saving the booking:", err);
+        await booking.save();
+        return res.status(201).json(booking);
+    } catch (error) {
+        console.error('Error creating booking:', error.message);
+        return res.status(500).json({ error: 'Internal server error' });
     }
 };
 
@@ -56,7 +59,19 @@ const bookingGet = async (req, res) => {
     }
 };
 
+const getAllBookings = async (req, res) => {
+    try {
+        const bookings = await Booking.find().populate('user').populate('ride');
+        res.status(200).json(bookings);
+    } catch (error) {
+        console.error('Error fetching bookings:', error);
+        res.status(500).json({ error: 'Error fetching bookings' });
+    }
+};
+
+
 module.exports = {
     bookingPost,
-    bookingGet
+    bookingGet,
+    getAllBookings
 };
