@@ -1,9 +1,12 @@
+require('dotenv').config();
+
 const express = require('express');
 const app = express();
 const bcrypt = require('bcrypt');
+const crypto = require("crypto");
 // database connection
 const mongoose = require("mongoose");
-const db = mongoose.connect("mongodb+srv://molinajesus2003:weJyz3uFbpRRcg2M@cluster0.orvrvph.mongodb.net/DB_Aventados");
+const db = mongoose.connect("mongodb+srv://josephme5712:9a1Ao5AEy09ewGbC@cluster0.m5sfesz.mongodb.net/DB_Aventados");
 
 // parser for the request body (required for the POST and PUT methods)
 const bodyParser = require("body-parser");
@@ -23,7 +26,7 @@ const User = require('./Models/userModel');
 const Booking = require('./Models/bookingModel');
 
 // Endpoint para iniciar sesión
-app.post('/api/login', async (req, res) => {
+/*app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
 
   console.log('Received login request:', { email, password });
@@ -53,7 +56,7 @@ app.post('/api/login', async (req, res) => {
     console.error('Error interno del servidor:', error);
     res.status(500).json({ error: 'Error interno del servidor' });
   }
-});
+});*/
 
 // Endpoint para buscar rides
 app.post("/api/rides/search", async (req, res) => {
@@ -132,3 +135,41 @@ app.get("/api/bookingsClient", getAllBookings);
 
 
 app.listen(3001, () => console.log(`Example app listening on port 3001!`))
+
+
+const { saveSession, getSession } = require("./Controllers/sessionController.js");
+
+
+
+// Session-based login route
+app.post("/api/session", async function (req, res) {
+  const { email, password } = req.body;
+
+  try {
+      const user = await User.findOne({ email });
+
+      if (!user) {
+          return res.status(404).json({ error: 'Usuario no encontrado' });
+      }
+
+      const passwordMatch = await bcrypt.compare(password, user.password);
+      if (!passwordMatch) {
+          return res.status(401).json({ error: 'Contraseña incorrecta' });
+      }
+
+      // Genera y guarda la sesión con el token y el rol del usuario
+      const session = await saveSession(user.email, user.role);  // Pasamos el rol del usuario
+      if (!session) {
+          return res.status(500).json({ error: 'Hubo un error al crear la sesión' });
+      }
+
+      // Retorna el token, el nombre del usuario y el rol
+      res.status(201).json({ token: session.token, user: user.first_name, role: user.role });
+  } catch (error) {
+      console.error('Error interno del servidor:', error);
+      res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+//----
+
