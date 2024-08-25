@@ -3,7 +3,7 @@ const app = express();
 const bcrypt = require('bcrypt');
 // database connection
 const mongoose = require("mongoose");
-const db = mongoose.connect("mongodb+srv://josephme5712:9a1Ao5AEy09ewGbC@cluster0.m5sfesz.mongodb.net/DB_Aventados");
+const db = mongoose.connect("mongodb+srv://molinajesus2003:weJyz3uFbpRRcg2M@cluster0.orvrvph.mongodb.net/DB_Aventados");
 
 // parser for the request body (required for the POST and PUT methods)
 const bodyParser = require("body-parser");
@@ -106,7 +106,8 @@ const {
   userGet,
   userDelete,
   userPatch,
-  getUserById
+  getUserById,
+  userVerify
 } = require("./Controllers/userController.js");
 
 const {
@@ -121,6 +122,7 @@ app.get("/api/user",userGet);
 app.delete("/api/user",userDelete);
 app.patch("/api/user",userPatch);
 app.get("/api/user/:userId", getUserById);
+app.get("/api/user/?token=", userVerify);
 
 // Booking routes
 app.post("/api/bookings", bookingPost);

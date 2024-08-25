@@ -14,6 +14,7 @@ const userSchema = new Schema({
     country: { type: String },
     state: { type: String },
     city: { type: String },
+    status:{type: String, enum:['pending','active'], default: 'pending'},
     role: { type: String, default:"client"} 
 });
 

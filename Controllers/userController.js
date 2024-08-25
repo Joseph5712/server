@@ -1,26 +1,81 @@
 const User = require("../Models/userModel.js");
-
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 // CREATED
+const { MailerSend, EmailParams, Sender, Recipient } = require("mailersend");
+
+const mailerSend = new MailerSend({
+  apiKey: 'mlsn.2e27dddbc79097aa82296d43f56bb3d5055494d27629e24ccf5e7cf507abdef9',
+  //Primer Cuenta 
+  //mlsn.c70983acdac07d1fb5fc82cd376d29efb87096babba2d72dc8d78453efd9f855
+  //mlsn.be2061d26090f9748829597fe92cb3a6318cf27827c6dc9e206a27255cd93ac8
+  
+});
+
 const userPost = async (req, res) => {
   let user = new User(req.body);
+
   await user
     .save()
-    .then((user) => {
-      res.status(201); 
-      res.header({
-        location: `/api/user/?id=${user.id}`,
+    .then(async (user) => {
+      // Generar el token JWT usando el ID del usuario guardado
+      const token = jwt.sign({ userID: user._id }, "SECRET_KEY", {
+        expiresIn: "1h",
       });
-      res.json(user);
+
+      // Configurar el correo electrónico
+      const emailParams = new EmailParams()
+        .setFrom(new Sender("no-reply@trial-neqvygmxyjjl0p7w.mlsender.net", "Aventados"))
+        .setTo([new Recipient(user.email, user.first_name + " " + user.last_name)])
+        .setSubject("Verifica tu cuenta")
+        .setHtml(`
+          <p>Por favor, haz click en el siguiente enlace para verificar tu cuenta:</p>
+          <a href="http://localhost:3001/user/?token=${token}">Verificar cuenta</a>
+        `);
+
+      // Intentar enviar el correo de verificación
+      try {
+        const response = await mailerSend.email.send(emailParams);
+        console.log("Correo de verificación enviado:", response);
+
+        // Establecer la cabecera de ubicación y enviar la respuesta final
+        res.status(201).header({
+          location: `/api/user/?id=${user._id}`,
+        }).json({
+          message: "Registro exitoso. Por favor, revisa tu correo para verificar tu cuenta.",
+        });
+      } catch (error) {
+        console.error("Error enviando el correo de verificación:", error);
+        res.status(500).json({ message: "Error enviando el correo de verificación." });
+      }
     })
     .catch((err) => {
-      res.status(422);
-      console.log("error while saving the user", err);
-      res.json({
-        error: "There was an error saving the user",
+      console.log("Error al guardar el usuario", err);
+      res.status(422).json({
+        error: "Hubo un error al guardar el usuario",
       });
     });
 };
+
+
+
+const userVerify = async (req, res) =>{
+  const {token} = req.params;
+  const decoded = jwt.verify(token, 'SECRET_KEY');
+  let user;
+  user = await User.findById(decoded.userID);
+
+  if(!user){
+    return res.status(400).json({message: 'error while queryting the user'});
+  }else{
+    user.status = 'active';
+    await user.save();
+    res.redirect('client\auth\login.html');
+  }
+}
+
+
 
 //mostrar
 const userGet = (req, res) => {
@@ -139,5 +194,6 @@ module.exports = {
   userGet,
   userPatch,
   userDelete,
-  getUserById 
+  getUserById,
+  userVerify
 };
