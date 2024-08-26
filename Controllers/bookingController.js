@@ -4,9 +4,13 @@ const User = require('../Models/userModel');
 
 // CREAR Booking
 const bookingPost = async (req, res) => {
-    const { userId, rideId } = req.body;
-
     try {
+        const { rideId } = req.body;  // Solo necesitamos el rideId del cuerpo de la solicitud
+        const userId = req.user._id;   // Obtener el userId del token decodificado
+
+        console.log("User ID:", userId);  // Asegúrate de que el userId se está obteniendo correctamente
+        console.log("Ride ID:", rideId);  // Asegúrate de que el rideId se está obteniendo correctamente
+
         // Verificar si el ride existe
         const ride = await Ride.findById(rideId);
         if (!ride) {
@@ -21,7 +25,7 @@ const bookingPost = async (req, res) => {
 
         // Crear una nueva reserva
         const booking = new Booking({
-            user: userId,
+            user: userId,  // Utilizamos el userId extraído del token
             ride: rideId,
             status: 'pending' // o cualquier otro estado inicial
         });
@@ -33,6 +37,8 @@ const bookingPost = async (req, res) => {
         return res.status(500).json({ error: 'Internal server error' });
     }
 };
+
+
 
 // MOSTRAR Bookings por Driver
 const bookingGet = async (req, res) => {

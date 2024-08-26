@@ -119,6 +119,9 @@ const {
   getAllBookings
 } = require("./Controllers/bookingController.js");
 
+// Importar controladores
+const { saveSession, authenticateToken } = require("./Controllers/sessionController.js");
+
 // User routes
 app.post("/api/user", userPost);
 app.get("/api/user",userGet);
@@ -128,7 +131,7 @@ app.get("/api/user/:userId", getUserById);
 app.get("/api/user/?token=", userVerify);
 
 // Booking routes
-app.post("/api/bookings", bookingPost);
+app.post("/api/bookings", authenticateToken, bookingPost);
 app.get("/api/bookings", bookingGet);
 app.get("/api/bookingsClient", getAllBookings);
 
@@ -137,11 +140,12 @@ app.get("/api/bookingsClient", getAllBookings);
 app.listen(3001, () => console.log(`Example app listening on port 3001!`))
 
 
-const { saveSession, getSession } = require("./Controllers/sessionController.js");
 
 
 
-// Session-based login route
+
+
+// Endpoint de login usando JWT
 app.post("/api/session", async function (req, res) {
   const { email, password } = req.body;
 
@@ -157,8 +161,8 @@ app.post("/api/session", async function (req, res) {
           return res.status(401).json({ error: 'Contraseña incorrecta' });
       }
 
-      // Genera y guarda la sesión con el token y el rol del usuario
-      const session = await saveSession(user.email, user.role);  // Pasamos el rol del usuario
+      // Genera y guarda la sesión con el token y el userId del usuario
+      const session = await saveSession(user._id, user.role);
       if (!session) {
           return res.status(500).json({ error: 'Hubo un error al crear la sesión' });
       }

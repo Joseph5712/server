@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const sessionSchema = new Schema({
     token: { type: String, required: true },
-    user: { type: String, required: true },  // Cambiado de 'user' a 'email' para mayor claridad
+    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },  // Cambiado a ObjectId para referenciar al usuario
     role: { type: String, required: true }   // Añadir campo 'role'
 });
 

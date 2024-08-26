@@ -71,7 +71,7 @@ const userVerify = async (req, res) =>{
   }else{
     user.status = 'active';
     await user.save();
-    res.redirect('client\auth\login.html');
+    res.redirect('client/auth/login.html');
   }
 }
 
