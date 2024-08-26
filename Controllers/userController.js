@@ -2,15 +2,10 @@ const User = require("../Models/userModel.js");
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-// CREATED
 const { MailerSend, EmailParams, Sender, Recipient } = require("mailersend");
 
 const mailerSend = new MailerSend({
   apiKey: 'mlsn.2e27dddbc79097aa82296d43f56bb3d5055494d27629e24ccf5e7cf507abdef9',
-  //Primer Cuenta 
-  //mlsn.c70983acdac07d1fb5fc82cd376d29efb87096babba2d72dc8d78453efd9f855
-  //mlsn.be2061d26090f9748829597fe92cb3a6318cf27827c6dc9e206a27255cd93ac8
-  
 });
 
 const userPost = async (req, res) => {
@@ -23,6 +18,7 @@ const userPost = async (req, res) => {
       const token = jwt.sign({ userID: user._id }, "SECRET_KEY", {
         expiresIn: "1h",
       });
+      console.log(token);
 
       // Configurar el correo electrónico
       const emailParams = new EmailParams()
@@ -31,7 +27,7 @@ const userPost = async (req, res) => {
         .setSubject("Verifica tu cuenta")
         .setHtml(`
           <p>Por favor, haz click en el siguiente enlace para verificar tu cuenta:</p>
-          <a href="http://localhost:3001/user/?token=${token}">Verificar cuenta</a>
+          <a href="http://localhost:3001/verify/${token}">Verificar cuenta</a>
         `);
 
       // Intentar enviar el correo de verificación
@@ -57,24 +53,6 @@ const userPost = async (req, res) => {
       });
     });
 };
-
-
-
-const userVerify = async (req, res) =>{
-  const {token} = req.params;
-  const decoded = jwt.verify(token, 'SECRET_KEY');
-  let user;
-  user = await User.findById(decoded.userID);
-
-  if(!user){
-    return res.status(400).json({message: 'error while queryting the user'});
-  }else{
-    user.status = 'active';
-    await user.save();
-    res.redirect('client\auth\login.html');
-  }
-}
-
 
 
 //mostrar
@@ -171,29 +149,10 @@ const userDelete = async (req, res) => {
   }
 };
 
-//mostrar usuario por id
-const getUserById = (req, res) => {
-  const userId = req.params.userId; // Obtener el ID del usuario de los parámetros de la ruta
-
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        res.status(404).json({ error: "User not found" });
-      } else {
-        res.json(user);
-      }
-    })
-    .catch((err) => {
-      console.error("Error while fetching user:", err);
-      res.status(500).json({ error: "Error fetching user" });
-    });
-};
 
 module.exports = {
   userPost,
   userGet,
   userPatch,
-  userDelete,
-  getUserById,
-  userVerify
+  userDelete
 };

@@ -87,6 +87,38 @@ app.post("/api/rides/search", async (req, res) => {
   }
 });
 
+app.get("/api/verify/:token", async (req, res) => {
+  try {
+    const { token } = req.params; // Obteniendo el token desde la URL
+
+    // Verificar el token
+    const decoded = jwt.verify(token, 'SECRET_KEY');
+
+    // Buscar el usuario por ID
+    const user = await User.findById(decoded.userID);
+
+    if (!user) {
+      return res.status(400).json({ message: 'Usuario no encontrado' });
+    }
+
+    // Verificar si el usuario ya está activo
+    if (user.status === 'active') {
+      return res.status(400).json({ message: 'El usuario ya está activo' });
+    }
+
+    // Cambiar el estado del usuario a "active"
+    user.status = 'active';
+    await user.save();
+
+    // Redirigir al usuario a la página de login
+    res.redirect('/client/auth/login.html');
+  } catch (error) {
+    console.error('Error en la verificación de cuenta:', error);
+    res.status(400).json({ message: 'Enlace de verificación inválido o expirado' });
+  }
+});
+
+
 const {
   rideGet,
   ridePost,
@@ -106,8 +138,6 @@ const {
   userGet,
   userDelete,
   userPatch,
-  getUserById,
-  userVerify
 } = require("./Controllers/userController.js");
 
 const {
@@ -121,8 +151,6 @@ app.post("/api/user", userPost);
 app.get("/api/user",userGet);
 app.delete("/api/user",userDelete);
 app.patch("/api/user",userPatch);
-app.get("/api/user/:userId", getUserById);
-app.get("/api/user/?token=", userVerify);
 
 // Booking routes
 app.post("/api/bookings", bookingPost);
