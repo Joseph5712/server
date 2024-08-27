@@ -1,7 +1,5 @@
 require('dotenv').config();
 
-
-
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const app = express();
@@ -28,7 +26,10 @@ const Ride = require('./Models/rideModel');
 const User = require('./Models/userModel');
 const Booking = require('./Models/bookingModel');
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4ece5bf2e9560271a27ecfeb0e99943ecd14b0d5
 
 // Endpoint para buscar rides
 app.post("/api/rides/search", async (req, res) => {
