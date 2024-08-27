@@ -2,15 +2,35 @@ const Booking = require("../Models/bookingModel.js");
 const Ride = require("../Models/rideModel.js");
 const User = require('../Models/userModel');
 const Session = require("../models/sessionModel");
+const jwt = require('jsonwebtoken');
 
 // CREAR Booking
 const bookingPost = async (req, res) => {
     try {
-        const { rideId } = req.body;  // Solo necesitamos el rideId del cuerpo de la solicitud
-        const userId = req.user._id;   // Obtener el userId del token decodificado
+        // Verificar el token
+        const authHeader = req.headers.authorization;
+        if (!authHeader) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
 
-        console.log("User ID:", userId);  // Asegúrate de que el userId se está obteniendo correctamente
-        console.log("Ride ID:", rideId);  // Asegúrate de que el rideId se está obteniendo correctamente
+        const token = authHeader.split(' ')[1];
+        if (!token) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+
+        // Decodificar el token para obtener el userId
+        let userId;
+        try {
+            const decodedToken = jwt.verify(token, 'your_secret_key'); // Usa tu clave secreta para verificar el token
+            userId = decodedToken.userId;
+        } catch (error) {
+            return res.status(403).json({ error: 'Forbidden' });
+        }
+
+        const { rideId } = req.body;
+
+        console.log("User ID:", userId);
+        console.log("Ride ID:", rideId);
 
         // Verificar si el ride existe
         const ride = await Ride.findById(rideId);
@@ -26,9 +46,9 @@ const bookingPost = async (req, res) => {
 
         // Crear una nueva reserva
         const booking = new Booking({
-            user: userId,  // Utilizamos el userId extraído del token
+            user: userId,
             ride: rideId,
-            status: 'pending' // o cualquier otro estado inicial
+            status: 'pending'
         });
 
         await booking.save();
@@ -38,6 +58,7 @@ const bookingPost = async (req, res) => {
         return res.status(500).json({ error: 'Internal server error' });
     }
 };
+
 
 
 
