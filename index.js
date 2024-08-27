@@ -111,12 +111,10 @@ app.get('/api/verify/:token', async (req, res) => {
       return res.status(400).json({ message: 'El usuario ya está activo' });
     }
 
-    // Cambiar el estado del usuario a "active"
     user.status = 'active';
     await user.save();
-
-    // Redirigir al usuario a la página de login
-    res.redirect('/client/auth/login.html');
+    
+    res.redirect('http://127.0.0.1:5501//client/auth/login.html');
   } catch (error) {
     console.error('Error en la verificación de cuenta:', error.message);
     res.status(400).json({ message: 'Enlace de verificación inválido o expirado' });
