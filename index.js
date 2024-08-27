@@ -9,7 +9,7 @@ const bcrypt = require('bcrypt');
 const crypto = require("crypto");
 // database connection
 const mongoose = require("mongoose");
-const db = mongoose.connect("mongodb+srv://molinajesus2003:weJyz3uFbpRRcg2M@cluster0.orvrvph.mongodb.net/DB_Aventados");
+const db = mongoose.connect("mongodb+srv://josephme5712:9a1Ao5AEy09ewGbC@cluster0.m5sfesz.mongodb.net/DB_Aventados");
 
 // parser for the request body (required for the POST and PUT methods)
 const bodyParser = require("body-parser");
@@ -140,8 +140,8 @@ const {
 // Ride routes
 app.post("/api/rides", authenticateToken, ridePost);
 app.get("/api/rides", authenticateToken, rideGet);
-app.patch("/api/rides", ridePatch);
-app.delete("/api/rides", rideDelete);
+app.patch("/api/rides", authenticateToken,ridePatch);
+app.delete("/api/rides", authenticateToken,rideDelete);
 
 
 const {
