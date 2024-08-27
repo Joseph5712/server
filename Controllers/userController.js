@@ -15,20 +15,21 @@ const userPost = async (req, res) => {
     .save()
     .then(async (user) => {
       // Generar el token JWT usando el ID del usuario guardado
-      const token = jwt.sign({ userID: user._id }, "SECRET_KEY", {
-        expiresIn: "1h",
-      });
+      const token = jwt.sign({ userID: user._id }, 'SECRET_KEY', { expiresIn: "5h" });
       console.log(token);
 
       // Configurar el correo electrónico
-      const emailParams = new EmailParams()
-        .setFrom(new Sender("no-reply@trial-neqvygmxyjjl0p7w.mlsender.net", "Aventados"))
-        .setTo([new Recipient(user.email, user.first_name + " " + user.last_name)])
-        .setSubject("Verifica tu cuenta")
-        .setHtml(`
-          <p>Por favor, haz click en el siguiente enlace para verificar tu cuenta:</p>
-          <a href="http://localhost:3001/verify/${token}">Verificar cuenta</a>
-        `);
+      const verificationUrl = `http://localhost:3001/api/verify/${token}`;
+console.log("Verification URL:", verificationUrl);
+
+const emailParams = new EmailParams()
+  .setFrom(new Sender("no-reply@trial-neqvygmxyjjl0p7w.mlsender.net", "Aventados"))
+  .setTo([new Recipient(user.email, user.first_name + " " + user.last_name)])
+  .setSubject("Verifica tu cuenta")
+  .setHtml(`
+    <p>Por favor, haz click en el siguiente enlace para verificar tu cuenta:</p>
+    <a href="${verificationUrl}">Verificar cuenta</a>
+  `);
 
       // Intentar enviar el correo de verificación
       try {
@@ -53,6 +54,7 @@ const userPost = async (req, res) => {
       });
     });
 };
+
 
 
 //mostrar

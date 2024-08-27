@@ -1,12 +1,15 @@
 require('dotenv').config();
 
+
+
 const express = require('express');
+const jwt = require('jsonwebtoken');
 const app = express();
 const bcrypt = require('bcrypt');
 const crypto = require("crypto");
 // database connection
 const mongoose = require("mongoose");
-const db = mongoose.connect("mongodb+srv://josephme5712:9a1Ao5AEy09ewGbC@cluster0.m5sfesz.mongodb.net/DB_Aventados");
+const db = mongoose.connect("mongodb+srv://molinajesus2003:weJyz3uFbpRRcg2M@cluster0.orvrvph.mongodb.net/DB_Aventados");
 
 // parser for the request body (required for the POST and PUT methods)
 const bodyParser = require("body-parser");
@@ -90,13 +93,13 @@ app.post("/api/rides/search", async (req, res) => {
   }
 });
 
-app.get("/api/verify/:token", async (req, res) => {
+app.get('/api/verify/:token', async (req, res) => {
+  
   try {
-    const { token } = req.params; // Obteniendo el token desde la URL
-
+    const  {token}  = req.params;
+    
     // Verificar el token
     const decoded = jwt.verify(token, 'SECRET_KEY');
-
     // Buscar el usuario por ID
     const user = await User.findById(decoded.userID);
 
@@ -104,22 +107,21 @@ app.get("/api/verify/:token", async (req, res) => {
       return res.status(400).json({ message: 'Usuario no encontrado' });
     }
 
-    // Verificar si el usuario ya está activo
     if (user.status === 'active') {
       return res.status(400).json({ message: 'El usuario ya está activo' });
     }
 
-    // Cambiar el estado del usuario a "active"
     user.status = 'active';
     await user.save();
-
-    // Redirigir al usuario a la página de login
-    res.redirect('/client/auth/login.html');
+    
+    res.redirect('http://127.0.0.1:5501//client/auth/login.html');
   } catch (error) {
-    console.error('Error en la verificación de cuenta:', error);
+    console.error('Error en la verificación de cuenta:', error.message);
     res.status(400).json({ message: 'Enlace de verificación inválido o expirado' });
   }
 });
+
+
 
 
 const {
