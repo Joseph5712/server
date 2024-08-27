@@ -1,6 +1,7 @@
 const Booking = require("../Models/bookingModel.js");
 const Ride = require("../Models/rideModel.js");
 const User = require('../Models/userModel');
+const Session = require("../models/sessionModel");
 
 // CREAR Booking
 const bookingPost = async (req, res) => {
@@ -42,7 +43,7 @@ const bookingPost = async (req, res) => {
 
 // MOSTRAR Bookings por Driver
 const bookingGet = async (req, res) => {
-    const driverId = req.query.driverId;
+    const driverId = req.user._id;  // Obtener el driverId del token decodificado
 
     try {
         // Encontrar todos los rides creados por el conductor
@@ -65,15 +66,24 @@ const bookingGet = async (req, res) => {
     }
 };
 
-const getAllBookings = async (req, res) => {
+const getAllBookings = async (req, res) => { //filtra los bookings del usuario que este logueado
     try {
-        const bookings = await Booking.find().populate('user').populate('ride');
+        const userId = req.user._id;  // Obtener el userId del usuario autenticado
+
+        // Encontrar todos los bookings del usuario autenticado
+        const bookings = await Booking.find({ user: userId }).populate('user').populate('ride');
+
+        if (bookings.length === 0) {
+            return res.status(404).json({ message: 'No bookings found for this user' });
+        }
+
         res.status(200).json(bookings);
     } catch (error) {
         console.error('Error fetching bookings:', error);
         res.status(500).json({ error: 'Error fetching bookings' });
     }
 };
+
 
 
 module.exports = {

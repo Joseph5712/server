@@ -1,20 +1,17 @@
 const Ride = require('../Models/rideModel');
 const User = require('../Models/userModel');
+const Booking = require('../Models/bookingModel');
 
 const ridePost = async (req, res) => {
-    const { departureFrom, arriveTo, days, time, seats, fee, vehicleDetails, userId } = req.body;
+    const { departureFrom, arriveTo, days, time, seats, fee, vehicleDetails } = req.body;
+    const userId = req.user._id;  // Obtener el userId del token decodificado
 
-    // Verifica que todos los campos necesarios estén presentes y que userId sea un string no vacío
-    if (!departureFrom || !arriveTo || !userId || typeof userId !== 'string' || userId.trim() === '') {
+    // Verifica que todos los campos necesarios estén presentes
+    if (!departureFrom || !arriveTo || !userId) {
         return res.status(422).json({ error: "No valid data provided for ride" });
     }
 
     try {
-        // Verificar si el usuario existe
-        const user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).json({ error: "User not found" });
-        }
         // Crear el objeto ride
         const ride = new Ride({
             departureFrom,
@@ -42,27 +39,30 @@ const ridePost = async (req, res) => {
 
 
 
+
 // Get all rides or a specific ride by ID (GET)
-const rideGet = (req, res) => {
-    if (req.query && req.query.id) {
-        Ride.findById(req.query.id)
-            .populate('user')
-            .then((ride) => {
-                res.json(ride);
-            })
-            .catch((err) => {
-                res.status(404).json({ error: "Ride doesn't exist" });
-                console.log("Error while querying the ride", err);
-            });
-    } else {
-        Ride.find()
-            .populate('user')
-            .then((rides) => {
-                res.json(rides);
-            })
-            .catch((err) => {
-                res.status(422).json({ error: err });
-            });
+const rideGet = async (req, res) => {
+    try {
+        const userId = req.user._id; // Obtener el userId del usuario autenticado desde req.user
+
+        if (req.query && req.query.id) {
+            // Si se proporciona un ID específico, buscar ese ride
+            const ride = await Ride.findById(req.query.id).populate('user'); // Cambié 'Ride' a 'ride' en la respuesta
+            if (!ride) {
+                return res.status(404).json({ error: "Ride doesn't exist" });
+            }
+            return res.json(ride); // Corrige aquí para devolver el ride encontrado
+        } else {
+            // Si no se proporciona un ID, obtener todos los rides del usuario autenticado
+            const rides = await Ride.find({ user: userId }).populate('user');
+            if (rides.length === 0) {
+                return res.status(404).json({ message: 'No rides found for this user' });
+            }
+            return res.json(rides);
+        }
+    } catch (err) {
+        console.error("Error while querying the rides", err);
+        return res.status(422).json({ error: err });
     }
 };
 

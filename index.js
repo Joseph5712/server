@@ -129,9 +129,15 @@ const {
   rideDelete
 } = require("./Controllers/rideController.js");
 
+// Importar controladores
+const { 
+  saveSession,
+  authenticateToken 
+} = require("./Controllers/sessionController.js");
+
 // Ride routes
-app.post("/api/rides", ridePost);
-app.get("/api/rides", rideGet);
+app.post("/api/rides", authenticateToken, ridePost);
+app.get("/api/rides", authenticateToken, rideGet);
 app.patch("/api/rides", ridePatch);
 app.delete("/api/rides", rideDelete);
 
@@ -149,8 +155,7 @@ const {
   getAllBookings
 } = require("./Controllers/bookingController.js");
 
-// Importar controladores
-const { saveSession, authenticateToken } = require("./Controllers/sessionController.js");
+
 
 // User routes
 app.post("/api/user", userPost);
@@ -160,16 +165,12 @@ app.patch("/api/user",userPatch);
 
 // Booking routes
 app.post("/api/bookings", authenticateToken, bookingPost);
-app.get("/api/bookings", bookingGet);
-app.get("/api/bookingsClient", getAllBookings);
+app.get("/api/bookings", authenticateToken, bookingGet);
+app.get("/api/bookingsClient", authenticateToken, getAllBookings);
 
 
 
 app.listen(3001, () => console.log(`Example app listening on port 3001!`))
-
-
-
-
 
 
 
