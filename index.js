@@ -1,14 +1,24 @@
 require('dotenv').config();
+require('./Controllers/passport.js'); // Importa la configuración de Passport
+
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 const express = require('express');
+const session = require('express-session');
 const jwt = require('jsonwebtoken');
 const app = express();
 const bcrypt = require('bcrypt');
 const crypto = require("crypto");
 // database connection
 const mongoose = require("mongoose");
+<<<<<<< HEAD
 const db = mongoose.connect("mongodb+srv://josephme5712:9a1Ao5AEy09ewGbC@cluster0.m5sfesz.mongodb.net/DB_Aventados");
 
+=======
+const db = mongoose.connect("mongodb+srv://molinajesus2003:weJyz3uFbpRRcg2M@cluster0.orvrvph.mongodb.net/DB_Aventados");
+const authRoutes = require('./auth.js');
+>>>>>>> b686ea024ec6108fab1f90dabe5ee180457a8ded
 // parser for the request body (required for the POST and PUT methods)
 const bodyParser = require("body-parser");
 app.use(bodyParser.json());
@@ -26,8 +36,11 @@ const Ride = require('./Models/rideModel');
 const User = require('./Models/userModel');
 const Booking = require('./Models/bookingModel');
 
+<<<<<<< HEAD
 const THE_SECRET_KEY = '123';
 
+=======
+>>>>>>> b686ea024ec6108fab1f90dabe5ee180457a8ded
 
 // Endpoint para buscar rides
 app.post("/api/rides/search", async (req, res) => {
@@ -89,6 +102,7 @@ app.get('/api/verify/:token', async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
 // Endpoint de login usando JWT
 app.post("/api/session", async function (req, res) {
   const { email, password } = req.body;
@@ -119,13 +133,34 @@ app.post("/api/session", async function (req, res) {
   }
 });
 
+=======
+// Configuración de la sesión
+app.use(session({
+  secret: '123',
+  resave: false,
+  saveUninitialized: true,
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Middleware para analizar el cuerpo de las solicitudes POST
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+app.use('/',authRoutes);
+>>>>>>> b686ea024ec6108fab1f90dabe5ee180457a8ded
 
 const {
   rideGet,
   ridePost,
   ridePatch,
+<<<<<<< HEAD
   rideDelete,
   getRidesByDriver
+=======
+  rideDelete
+>>>>>>> b686ea024ec6108fab1f90dabe5ee180457a8ded
 } = require("./Controllers/rideController.js");
 
 // Importar controladores
@@ -137,7 +172,10 @@ const {
 // Ride routes
 app.post("/api/rides", authenticateToken, ridePost);
 app.get("/api/rides", authenticateToken, rideGet);
+<<<<<<< HEAD
 app.get("/api/rides", authenticateToken, getRidesByDriver);
+=======
+>>>>>>> b686ea024ec6108fab1f90dabe5ee180457a8ded
 app.patch("/api/rides", authenticateToken,ridePatch);
 app.delete("/api/rides", authenticateToken,rideDelete);
 
@@ -152,8 +190,12 @@ const {
 const {
   bookingPost,
   bookingGet,
+<<<<<<< HEAD
   getAllBookings,
   getClientBookings
+=======
+  getAllBookings
+>>>>>>> b686ea024ec6108fab1f90dabe5ee180457a8ded
 } = require("./Controllers/bookingController.js");
 
 
@@ -165,10 +207,16 @@ app.delete("/api/user",userDelete);
 app.patch("/api/user",userPatch);
 
 // Booking routes
+<<<<<<< HEAD
 app.post('/api/bookings', authenticateToken, bookingPost);
 app.get("/api/bookings", authenticateToken, bookingGet);
 app.get("/api/bookingsClient", authenticateToken, getAllBookings);
 app.get("/api/bookings", authenticateToken, getClientBookings);
+=======
+app.post("/api/bookings", authenticateToken, bookingPost);
+app.get("/api/bookings", authenticateToken, bookingGet);
+app.get("/api/bookingsClient", authenticateToken, getAllBookings);
+>>>>>>> b686ea024ec6108fab1f90dabe5ee180457a8ded
 
 
 
@@ -176,7 +224,10 @@ app.listen(3001, () => console.log(`Example app listening on port 3001!`))
 
 
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> b686ea024ec6108fab1f90dabe5ee180457a8ded
 //----
 
