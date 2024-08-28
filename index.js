@@ -7,7 +7,7 @@ const bcrypt = require('bcrypt');
 const crypto = require("crypto");
 // database connection
 const mongoose = require("mongoose");
-const db = mongoose.connect("mongodb+srv://molinajesus2003:weJyz3uFbpRRcg2M@cluster0.orvrvph.mongodb.net/DB_Aventados");
+const db = mongoose.connect("mongodb+srv://josephme5712:9a1Ao5AEy09ewGbC@cluster0.m5sfesz.mongodb.net/DB_Aventados");
 
 // parser for the request body (required for the POST and PUT methods)
 const bodyParser = require("body-parser");
@@ -26,10 +26,8 @@ const Ride = require('./Models/rideModel');
 const User = require('./Models/userModel');
 const Booking = require('./Models/bookingModel');
 
-<<<<<<< HEAD
+const THE_SECRET_KEY = '123';
 
-=======
->>>>>>> 4ece5bf2e9560271a27ecfeb0e99943ecd14b0d5
 
 // Endpoint para buscar rides
 app.post("/api/rides/search", async (req, res) => {
@@ -69,7 +67,7 @@ app.get('/api/verify/:token', async (req, res) => {
     const  {token}  = req.params;
     
     // Verificar el token
-    const decoded = jwt.verify(token, 'SECRET_KEY');
+    const decoded = jwt.verify(token, THE_SECRET_KEY);
     // Buscar el usuario por ID
     const user = await User.findById(decoded.userID);
 
@@ -90,61 +88,6 @@ app.get('/api/verify/:token', async (req, res) => {
     res.status(400).json({ message: 'Enlace de verificación inválido o expirado' });
   }
 });
-
-
-
-
-const {
-  rideGet,
-  ridePost,
-  ridePatch,
-  rideDelete
-} = require("./Controllers/rideController.js");
-
-// Importar controladores
-const { 
-  saveSession,
-  authenticateToken 
-} = require("./Controllers/sessionController.js");
-
-// Ride routes
-app.post("/api/rides", authenticateToken, ridePost);
-app.get("/api/rides", authenticateToken, rideGet);
-app.patch("/api/rides", authenticateToken,ridePatch);
-app.delete("/api/rides", authenticateToken,rideDelete);
-
-
-const {
-  userPost,
-  userGet,
-  userDelete,
-  userPatch,
-} = require("./Controllers/userController.js");
-
-const {
-  bookingPost,
-  bookingGet,
-  getAllBookings
-} = require("./Controllers/bookingController.js");
-
-
-
-// User routes
-app.post("/api/user", userPost);
-app.get("/api/user",userGet);
-app.delete("/api/user",userDelete);
-app.patch("/api/user",userPatch);
-
-// Booking routes
-app.post("/api/bookings", authenticateToken, bookingPost);
-app.get("/api/bookings", authenticateToken, bookingGet);
-app.get("/api/bookingsClient", authenticateToken, getAllBookings);
-
-
-
-app.listen(3001, () => console.log(`Example app listening on port 3001!`))
-
-
 
 // Endpoint de login usando JWT
 app.post("/api/session", async function (req, res) {
@@ -175,6 +118,65 @@ app.post("/api/session", async function (req, res) {
       res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
+
+
+const {
+  rideGet,
+  ridePost,
+  ridePatch,
+  rideDelete,
+  getRidesByDriver
+} = require("./Controllers/rideController.js");
+
+// Importar controladores
+const { 
+  saveSession,
+  authenticateToken 
+} = require("./Controllers/sessionController.js");
+
+// Ride routes
+app.post("/api/rides", authenticateToken, ridePost);
+app.get("/api/rides", authenticateToken, rideGet);
+app.get("/api/rides", authenticateToken, getRidesByDriver);
+app.patch("/api/rides", authenticateToken,ridePatch);
+app.delete("/api/rides", authenticateToken,rideDelete);
+
+
+const {
+  userPost,
+  userGet,
+  userDelete,
+  userPatch,
+} = require("./Controllers/userController.js");
+
+const {
+  bookingPost,
+  bookingGet,
+  getAllBookings,
+  getClientBookings
+} = require("./Controllers/bookingController.js");
+
+
+
+// User routes
+app.post("/api/user", userPost);
+app.get("/api/user",userGet);
+app.delete("/api/user",userDelete);
+app.patch("/api/user",userPatch);
+
+// Booking routes
+app.post('/api/bookings', authenticateToken, bookingPost);
+app.get("/api/bookings", authenticateToken, bookingGet);
+app.get("/api/bookingsClient", authenticateToken, getAllBookings);
+app.get("/api/bookings", authenticateToken, getClientBookings);
+
+
+
+app.listen(3001, () => console.log(`Example app listening on port 3001!`))
+
+
+
+
 
 //----
 

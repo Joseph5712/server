@@ -1,6 +1,10 @@
-const Ride = require('../Models/rideModel');
+require('dotenv').config();
+const bcrypt = require('bcrypt');
+const crypto = require("crypto");
+const jwt = require('jsonwebtoken');
+const Session = require("../models/sessionModel");
+const Ride = require("../Models/rideModel.js");
 const User = require('../Models/userModel');
-const Booking = require('../Models/bookingModel');
 
 const ridePost = async (req, res) => {
     const { departureFrom, arriveTo, days, time, seats, fee, vehicleDetails } = req.body;
@@ -133,11 +137,28 @@ const rideDelete = async (req, res) => {
     }
   };
 
+  const getRidesByDriver = async (req, res) => {
+    try {
+        const userId = req.user._id; // El ID del usuario autenticado se obtiene del token
+        const rides = await Ride.find({ user: userId });
+
+        if (rides.length === 0) {
+            return res.status(404).json({ message: 'No rides found for this driver' });
+        }
+
+        res.status(200).json(rides);
+    } catch (error) {
+        console.error('Error fetching rides:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
 
 
 module.exports = {
     rideGet,
     ridePost,
     ridePatch,
-    rideDelete
+    rideDelete,
+    getRidesByDriver
 };

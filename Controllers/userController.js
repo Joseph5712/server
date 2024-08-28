@@ -1,6 +1,11 @@
-const User = require("../Models/userModel.js");
-const jwt = require('jsonwebtoken');
 require('dotenv').config();
+const bcrypt = require('bcrypt');
+const crypto = require("crypto");
+const jwt = require('jsonwebtoken');
+const Session = require("../models/sessionModel");
+const Ride = require("../Models/rideModel.js");
+const User = require('../Models/userModel');
+const Booking = require('../Models/bookingModel.js');
 
 const { MailerSend, EmailParams, Sender, Recipient } = require("mailersend");
 

@@ -1,11 +1,16 @@
-const Booking = require("../Models/bookingModel.js");
+require('dotenv').config();
+const bcrypt = require('bcrypt');
+const crypto = require("crypto");
+const jwt = require('jsonwebtoken');
+const Session = require("../models/sessionModel");
 const Ride = require("../Models/rideModel.js");
 const User = require('../Models/userModel');
-const Session = require("../models/sessionModel");
-const jwt = require('jsonwebtoken');
+const Booking = require('../Models/bookingModel.js');
 
 // CREAR Booking
 const bookingPost = async (req, res) => {
+
+    const THE_SECRET_KEY = '123';
     try {
         // Verificar el token
         const authHeader = req.headers.authorization;
@@ -21,7 +26,7 @@ const bookingPost = async (req, res) => {
         // Decodificar el token para obtener el userId
         let userId;
         try {
-            const decodedToken = jwt.verify(token, 'your_secret_key'); // Usa tu clave secreta para verificar el token
+            const decodedToken = jwt.verify(token, THE_SECRET_KEY);
             userId = decodedToken.userId;
         } catch (error) {
             return res.status(403).json({ error: 'Forbidden' });
@@ -105,10 +110,27 @@ const getAllBookings = async (req, res) => { //filtra los bookings del usuario q
     }
 };
 
+const getClientBookings = async (req, res) => {
+    try {
+        const userId = req.user._id; // Obtener el ID del usuario autenticado desde el token
 
+        // Encontrar todos los bookings asociados a este usuario
+        const bookings = await Booking.find({ user: userId }).populate('ride');
+
+        if (!bookings.length) {
+            return res.status(404).json({ message: 'No bookings found for this user' });
+        }
+
+        res.status(200).json(bookings);
+    } catch (error) {
+        console.error('Error fetching bookings:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
 
 module.exports = {
     bookingPost,
     bookingGet,
-    getAllBookings
+    getAllBookings,
+    getClientBookings
 };
