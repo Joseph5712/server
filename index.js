@@ -1,6 +1,11 @@
 require('dotenv').config();
+require('./Controllers/passport.js'); // Importa la configuración de Passport
+
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 const express = require('express');
+const session = require('express-session');
 const jwt = require('jsonwebtoken');
 const app = express();
 const bcrypt = require('bcrypt');
@@ -8,7 +13,7 @@ const crypto = require("crypto");
 // database connection
 const mongoose = require("mongoose");
 const db = mongoose.connect("mongodb+srv://molinajesus2003:weJyz3uFbpRRcg2M@cluster0.orvrvph.mongodb.net/DB_Aventados");
-
+const authRoutes = require('./auth.js');
 // parser for the request body (required for the POST and PUT methods)
 const bodyParser = require("body-parser");
 app.use(bodyParser.json());
@@ -26,10 +31,6 @@ const Ride = require('./Models/rideModel');
 const User = require('./Models/userModel');
 const Booking = require('./Models/bookingModel');
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 4ece5bf2e9560271a27ecfeb0e99943ecd14b0d5
 
 // Endpoint para buscar rides
 app.post("/api/rides/search", async (req, res) => {
@@ -91,8 +92,21 @@ app.get('/api/verify/:token', async (req, res) => {
   }
 });
 
+// Configuración de la sesión
+app.use(session({
+  secret: '123',
+  resave: false,
+  saveUninitialized: true,
+}));
 
+app.use(passport.initialize());
+app.use(passport.session());
 
+// Middleware para analizar el cuerpo de las solicitudes POST
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+app.use('/',authRoutes);
 
 const {
   rideGet,
@@ -145,36 +159,6 @@ app.get("/api/bookingsClient", authenticateToken, getAllBookings);
 app.listen(3001, () => console.log(`Example app listening on port 3001!`))
 
 
-
-// Endpoint de login usando JWT
-app.post("/api/session", async function (req, res) {
-  const { email, password } = req.body;
-
-  try {
-      const user = await User.findOne({ email });
-
-      if (!user) {
-          return res.status(404).json({ error: 'Usuario no encontrado' });
-      }
-
-      const passwordMatch = await bcrypt.compare(password, user.password);
-      if (!passwordMatch) {
-          return res.status(401).json({ error: 'Contraseña incorrecta' });
-      }
-
-      // Genera y guarda la sesión con el token y el userId del usuario
-      const session = await saveSession(user._id, user.role);
-      if (!session) {
-          return res.status(500).json({ error: 'Hubo un error al crear la sesión' });
-      }
-
-      // Retorna el token, el nombre del usuario y el rol
-      res.status(201).json({ token: session.token, user: user.first_name, role: user.role });
-  } catch (error) {
-      console.error('Error interno del servidor:', error);
-      res.status(500).json({ error: 'Error interno del servidor' });
-  }
-});
 
 //----
 
